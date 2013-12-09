@@ -114,9 +114,10 @@ class Player(object):
 	#these moves are called!
 	def moveToward(self, other, dist):
 		if self.towardDir == 1:
-			self.pos = min(other.pos, self.pos + dist)
+			self.pos = min(other.pos - 1, self.pos + dist)
 		else:
-			self.pos = max(other.pos, self.pos - dist)
+			self.pos = max(other.pos + 1, self.pos - dist)
+		print(self.name, "moved forward by %d" % dist)
 		return True
 
 	def moveAway(self, dist):
@@ -124,6 +125,7 @@ class Player(object):
 			self.pos = max(0, self.pos - dist)
 		else:
 			self.pos = min(17, self.pos + dist)
+		print(self.name, "moved away by %d" % dist)
 		return True
 
 	def push(self, other, dist):
@@ -134,6 +136,7 @@ class Player(object):
 
 	def attack(self, other, dist, strength):
 		if abs(self.pos - other.pos) != dist:
+			print("Invalid attack distance!")
 			return False
 		other.respondAttack(dist, strength)
 		return True
