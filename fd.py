@@ -65,24 +65,22 @@ class Player(object):
 		print(self.hand)
 
 	def takeTurn(self, other, deck, discard):
-		print("")
-		printGameState(self, other, deck, discard)
-		print(self.name + "'s turn. What is your move?")
-		print("Your hand is:", self.hand)
-		print("Valid moves are movetoward, moveaway, push, attack, dashingstrike.")
-		moveString = input()
-		move, cards = splitMove(moveString)
 		if self.stunned:
 			print(self.name + " is stunned! " + self.name + " draws up to 5 and ends turn.")
 			self.stunned = False
 			self.drawUpTo(5, deck)
 			return True
+		print(self.name + "'s turn. What is your move?")
+		print("Your hand is:", self.hand)
+		print("Valid moves are movetoward, moveaway, push, attack, dashingstrike.")
+		moveString = input()
+		move, cards = splitMove(moveString)
 		if move in ["movetoward", "moveaway", "push", "attack", "dashingstrike"]:
 			self.playCards(cards)
 			if move == "movetoward":
 				self.moveToward(other, cards[0])
 			elif move == "moveaway":
-				self.moveAway(other, cards[0])
+				self.moveAway(cards[0])
 			elif move == "push":
 				self.push(other, cards[0])
 			elif move == "attack":
@@ -121,7 +119,7 @@ class Player(object):
 			self.pos = max(other.pos, self.pos - dist)
 		return True
 
-	def moveAway(self, other, dist):
+	def moveAway(self, dist):
 		if self.towardDir == 1:
 			self.pos = max(0, self.pos - dist)
 		else:
@@ -164,22 +162,18 @@ class Player(object):
 		print("Your hand is:", self.hand)
 		moveString = input("Give your response: ")
 		move, cards = splitMove(moveString)
-		print(move)
-		print(cards)
 		if move in ["defend", "retreat"]:
-			if self.playCards(cards):
-				if move == "defend":
-					return self.respondAttack(self, dist, strength)
-				elif move == "retreat":
-					#only one card should have been played
-					self.moveAway(cards[0])
-					self.stunned = True
-					return True
-				else:
-					#how did you get here?!
-					exit()
+			if move == "defend":
+				return self.respondAttack(dist, strength)
+			elif move == "retreat":
+				self.playCards(cards)
+				#only one card should have been played
+				self.moveAway(cards[0])
+				self.stunned = True
+				print(self.name, "retreats %d" % cards[0], "and is now stunned!")
+				return True
 			else:
-				#not a valid move!
+				#how did you get here?!
 				exit()
 		else:
 			#not a valid move!
@@ -195,8 +189,10 @@ def splitMove(moveWithCards):
 	return move, cards
 
 def printGameState(p1, p2, deck, discard):
-	print(p1.name, "is at pos", p1.pos, "and has", len(p1.hand), "cards.")
-	print(p2.name, "is at pos", p2.pos, "and has", len(p2.hand), "cards.")
+	print("------------------------------------------------------")
+	print("   " * p1.pos + "  " + p1.name[0] + "   " * (p2.pos - p1.pos - 1) + "  " + p2.name[0])
+	print("  1  2  3  4  5  6  7  8  9 10 11 12 13 14 15 16 17 18")
+	print("------------------------------------------------------")
 	print("Deck has", len(deck.cards), "cards.")
 
 def start():
@@ -214,7 +210,9 @@ def start():
 	p2.drawUpTo(5, deck)
 
 	while(not deck.empty()):
+		printGameState(p1, p2, deck, discard)
 		p1.takeTurn(p2, deck, discard)
+		printGameState(p1, p2, deck, discard)
 		p2.takeTurn(p1, deck, discard)
 
 if __name__ == '__main__':
