@@ -1,0 +1,28 @@
+server should be a SINGLE PROCESS
+
+NOTE: server does not have to be Flash Duel specific!!!!!!
+Would probably be best to write server code in general and have it pass along messages to the appropriate flash duel thing?
+
+Use 'select', as shown here:
+http://ilab.cs.byu.edu/python/threadingmodule.html
+
+When a client connects, server should ask for
+1. name
+2. character symbol
+3. lobby to join
+
+if lobby is empty, prompt for password
+if empty, create lobby with no password
+
+DON'T TRY TO DO SPECTATORS YET
+
+if lobby is full, tell user and ask for new lobby
+if lobby has 1 player, connect user to lobby and start game
+
+Server should create a big list of clients.
+For each client store which lobby they are connected to
+
+Have server listen for a message from one of the clients
+When it finds one, check which lobby they are connected to
+process player's input for that game
+make the next request for input, then go back to that big loop
